@@ -5,23 +5,14 @@ use std::collections::{HashMap, HashSet, VecDeque};
 use std::cmp::Ordering;
 
 fn make_graph(filename: &str) -> Vec<Vec<usize>> {
-    // Read the input file
     let input = fs::read_to_string(filename).expect("Reading the file failed");
     parse_edges(filename);
-
-    // Split the input into lines
     let mut lines = input.trim().split("\n");
-
-    // Read the number of nodes in the graph
     let n = match lines.next() {
         Some(line) => line.trim().parse::<usize>().unwrap(),
         None => return Vec::new(), // Return an empty matrix if there are no lines
     };
-
-    // Initialize the adjacency matrix with all zeros
     let mut matrix = vec![vec![0; n]; n];
-
-    // Read the edges from the input file and update the matrix
     for l in lines {
         let mut vertices = l.split(" ");
         let a = vertices.next().unwrap().trim().parse::<usize>().unwrap();
@@ -32,8 +23,6 @@ fn make_graph(filename: &str) -> Vec<Vec<usize>> {
 
     matrix
 }
-
-// Define a struct to represent a node in the graph.
 struct Node {
     // The distance of the node from the starting node.
     distance: usize,
@@ -41,11 +30,6 @@ struct Node {
     index: usize,
 }
 
-
-
-
-// Implement the PartialEq and Eq traits for the Node struct,
-// so that we can compare nodes by their distance.
 impl PartialEq for Node {
     fn eq(&self, other: &Self) -> bool {
         self.distance == other.distance
@@ -54,8 +38,6 @@ impl PartialEq for Node {
 
 impl Eq for Node {}
 
-// Implement the PartialOrd and Ord traits for the Node struct,
-// so that we can sort nodes by their distance using a priority queue.
 impl PartialOrd for Node {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         other.distance.partial_cmp(&self.distance)
@@ -68,12 +50,11 @@ impl Ord for Node {
     }
 }
 
-// Define a struct to represent a graph.
+
 struct Graph {
-    // The adjacency matrix of the graph.
-    // Each element in the matrix represents the distance between two nodes.
+
     adjacency_matrix: Vec<Vec<usize>>,
-    // The number of nodes in the graph.
+
     num_nodes: usize,
     circles: HashMap<String, HashSet<usize>>,
     features: HashMap<usize, Vec<bool>>,
@@ -105,33 +86,26 @@ impl Graph {
     }
 
    
-    // Define a method to find the longest path in the graph using Dijkstra's algorithm.
+
     fn longest_path(&self) -> usize {
-        // Create a vector to hold the distances of each node from the starting node.
+
         let mut distances: Vec<usize> = vec![std::usize::MAX; self.num_nodes];
-        // Set the distance of the starting node to 0.
+
         distances[0] = 0;
 
-        // Create a priority queue to hold the nodes in the graph,
-        // sorted by their distance from the starting node.
         let mut queue = BinaryHeap::new();
         queue.push(Node { distance: 0, index: 0 });
 
-        // While the queue is not empty, remove the node with the smallest distance
-        // and update the distances of its neighbors.
+
         while let Some(node) = queue.pop() {
-            // If the current node has not been visited before, mark it as visited
-            // and update its distance.
+
             if distances[node.index] != std::usize::MAX {
                 continue;
             }
 
             distances[node.index] = node.distance;
 
-            // For each neighbor of the current node, calculate the distance to that neighbor
-            // using the current node as the starting point. If the calculated distance
-            // is less than the current distance for that neighbor, update the distance
-            // and add the neighbor to the queue.
+
             for i in 0..self.num_nodes {
                 if self.adjacency_matrix[node.index][i] != 0 {
                     let new_distance = node.distance + self.adjacency_matrix[node.index][i];
@@ -178,23 +152,21 @@ fn parse_edges(filename: &str) -> Vec<(usize, usize)> {
 }
 
 fn parse_circles(filename: &str) -> HashMap<String, HashSet<usize>> {
-    // Read the input file
     let input = fs::read_to_string(filename).expect("Reading the file failed");
 
-    // Split the input into lines
     let mut lines = input.trim().split("\n");
 
-    // Initialize the map of circles
+
     let mut circles = HashMap::new();
 
-    // Read the circles from the input file and add them to the map
+
     for l in lines {
-        // Split the line into the name of the circle and the list of nodes
+        
         let mut parts = l.split(":");
         let name = parts.next().unwrap().trim().to_string();
         let nodes = parts.next().unwrap().trim().split(" ").map(|x| x.parse().unwrap()).collect();
 
-        // Add the circle to the map
+        
         circles.insert(name, nodes);
     }
 
@@ -202,15 +174,15 @@ fn parse_circles(filename: &str) -> HashMap<String, HashSet<usize>> {
 }
 
 fn parse_features(filename: &str) -> HashMap<usize, Vec<bool>> {
-    // Read the input file
+   
     let input = fs::read_to_string(filename).expect("Reading the file failed");
 
-    // Split the input into lines
+ 
     let mut lines = input.trim().split("\n");
 
     let mut features = HashMap::new();
 
-    // Read the features for each node from the input file
+  
     for l in lines {
         let mut parts = l.split(" ");
         let node_id = parts.next().unwrap().trim().parse::<usize>().unwrap();
@@ -225,13 +197,13 @@ fn parse_features(filename: &str) -> HashMap<usize, Vec<bool>> {
     features
 }
 fn parse_feature_names(filename: &str) -> Vec<String> {
-    // Read the input file
+
     let input = fs::read_to_string(filename).expect("Reading the file failed");
 
-    // Split the input into lines
+   
     let lines = input.trim().split("\n");
 
-    // Iterate through the lines and parse the feature names
+   
     lines.map(|line| line.trim().to_string()).collect()
 }
 fn parse_ego_features(filename: &str) -> Vec<bool> {
@@ -261,12 +233,17 @@ fn build_graph(
 
     graph
 }
+
+
+//This was the main function I used to display the longest path of facebook_combined file you see in the report. 
 //fn main() {
   //  let matrix = make_graph("facebook_combined.txt");
     //let graph = Graph { adjacency_matrix: matrix.clone(), num_nodes: matrix.len() };
     //let longest_path = graph.longest_path();
     //println!("The longest path in the graph is {}", longest_path);
 //}
+
+
 fn main() {
     fn main() {
         let edges = parse_edges("0.edges");
